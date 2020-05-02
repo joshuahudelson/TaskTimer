@@ -1,5 +1,6 @@
 
 
+
 window.addEventListener("load", function(){
   var tasks = ["", "", "", "", ""];
   var minutes = [0, 0, 0, 0, 0];
@@ -17,13 +18,14 @@ window.addEventListener("load", function(){
   anewvariable.addEventListener('click', startTaskClicked, false);
   bnewvariable.addEventListener('click', resetTaskClicked, false);
 
+  var audioctx = new (window.AudioContext || window.webkitAudioContext);
 
 
   function pull_data(e){
     for (let i=0; i<numTasks; i++){
       document.getElementById(taskdiv_array[i]).className = "TaskDiv-inactive";
       var temp_task = document.getElementById(task_array[i]).value;
-      tasks[i] = temp_task;
+      tasks[i] = temp_task;  //POINTLESS?  GET RID OF WHOLE ARRAY?
       temp_min = parseInt(document.getElementById(minutes_array[i]).value);
       minutes[i] = temp_min;
     }
@@ -36,8 +38,17 @@ window.addEventListener("load", function(){
     if (minutes[currentTask] <= 0){
       clearInterval(task_timer);
       unclickStart();
+      play_bell();
     }
   };
+
+
+  function play_bell(){
+    var sine = audioctx.createOscillator();
+    sine.connect(audioctx.destination);
+    sine.start();
+    window.setTimeout(function(){sine.disconnect();}, 400);
+  }
 
 
   function get_current(){
@@ -60,7 +71,7 @@ window.addEventListener("load", function(){
 
   function startTimer(){
     if (get_current()) {
-    task_timer = setInterval(function(){subtract_minute()}, 1000);
+    task_timer = setInterval(function(){subtract_minute()}, 60000);
     document.getElementById(taskdiv_array[currentTask]).className = "TaskDiv-active";
     console.log("startTimer ran");
     }
